@@ -1,0 +1,5 @@
+[*.{kt,kts}]
+# Allow PascalCase for Compose functions
+ktlint_standard_function-naming = disabled
+# Allow wildcard imports
+ktlint_standard_no-wildcard-imports = disabled
