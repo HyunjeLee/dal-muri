@@ -1,4 +1,4 @@
-package com.dalmuri.dalmuri.ui.theme
+package com.dalmuri.dalmuri.presentation.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
