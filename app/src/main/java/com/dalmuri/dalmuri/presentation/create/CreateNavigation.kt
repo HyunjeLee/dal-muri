@@ -6,6 +6,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.dalmuri.dalmuri.presentation.create.screen.CreateObstacleScreen
+import com.dalmuri.dalmuri.presentation.create.screen.CreateTodayScreen
+import com.dalmuri.dalmuri.presentation.create.screen.CreateTomorrowScreen
+import com.dalmuri.dalmuri.presentation.create.screen.CreateWrapUpScreen
 import com.dalmuri.dalmuri.presentation.navigation.CreateGraph
 import com.dalmuri.dalmuri.presentation.navigation.CreateRoute
 import com.dalmuri.dalmuri.presentation.navigation.DetailRoute

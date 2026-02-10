@@ -1,4 +1,4 @@
-package com.dalmuri.dalmuri.presentation.create
+package com.dalmuri.dalmuri.presentation.create.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dalmuri.dalmuri.presentation.create.CreateIntent
+import com.dalmuri.dalmuri.presentation.create.CreateSideEffect
+import com.dalmuri.dalmuri.presentation.create.CreateState
+import com.dalmuri.dalmuri.presentation.create.CreateViewModel
 import com.dalmuri.dalmuri.presentation.create.components.CreateBottomButton
 import com.dalmuri.dalmuri.presentation.create.components.CreateInputArea
 import com.dalmuri.dalmuri.presentation.create.components.CreateTitleText
@@ -24,13 +28,13 @@ import com.dalmuri.dalmuri.presentation.create.components.CreateTopBar
 import com.dalmuri.dalmuri.presentation.theme.DalmuriTheme
 import kotlinx.coroutines.flow.collectLatest
 
-private const val TODAY_TITLE = "What did you learn today?"
-private const val TODAY_HINT = "Where did you get stuck and how did you solve it?"
+private const val WRAP_UP_TITLE = "Wrap up today"
+private const val WRAP_UP_HINT = "A one-line summary of today's learning."
 
 @Composable
-fun CreateTodayScreen(
+fun CreateWrapUpScreen(
+    onFinish: () -> Unit,
     onBack: () -> Unit,
-    onNext: () -> Unit,
     viewModel: CreateViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -38,23 +42,27 @@ fun CreateTodayScreen(
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                CreateSideEffect.NavigateToObstacle -> onNext()
+                CreateSideEffect.NavigateToDetail -> onFinish()
                 else -> {}
             }
         }
     }
 
-    CreateTodayContent(uiState = uiState, onIntent = viewModel::handleIntent, onBackClick = onBack)
+    CreateWrapUpContent(
+        uiState = uiState,
+        onIntent = viewModel::handleIntent,
+        onBackClick = onBack,
+    )
 }
 
 @Composable
-fun CreateTodayContent(
+fun CreateWrapUpContent(
     uiState: CreateState,
     onIntent: (CreateIntent) -> Unit,
     onBackClick: () -> Unit,
 ) {
     Scaffold(
-        topBar = { CreateTopBar(onBackClick = onBackClick, progress = 0.25f) },
+        topBar = { CreateTopBar(onBackClick = onBackClick, progress = 1.0f) },
     ) { paddingValues ->
         Column(
             modifier =
@@ -64,7 +72,7 @@ fun CreateTodayContent(
                     .padding(horizontal = 16.dp)
                     .imePadding(),
         ) {
-            CreateTitleText(text = TODAY_TITLE)
+            CreateTitleText(text = WRAP_UP_TITLE)
             Spacer(modifier = Modifier.height(16.dp))
 
             Box(
@@ -72,18 +80,18 @@ fun CreateTodayContent(
                 contentAlignment = Alignment.TopCenter,
             ) {
                 CreateInputArea(
-                    text = uiState.learned,
-                    onValueChange = { onIntent(CreateIntent.OnLearnedChange(it)) },
-                    hint = TODAY_HINT,
+                    text = uiState.title,
+                    onValueChange = { onIntent(CreateIntent.OnWrapUpChange(it)) },
+                    hint = WRAP_UP_HINT,
+                    singleLine = true,
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             CreateBottomButton(
-                text = "Continue",
-                onClick = { onIntent(CreateIntent.OnProceedFromToday) },
-                enabled = uiState.learned.isNotEmpty(),
+                text = "Finish",
+                onClick = { onIntent(CreateIntent.OnFinish) },
             )
         }
     }
@@ -91,9 +99,9 @@ fun CreateTodayContent(
 
 @Preview(showBackground = true)
 @Composable
-private fun CreateTodayScreenPreview() {
+private fun CreateWrapUpScreenPreview() {
     DalmuriTheme {
-        CreateTodayContent(
+        CreateWrapUpContent(
             uiState = CreateState(),
             onIntent = {},
             onBackClick = {},

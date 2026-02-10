@@ -1,8 +1,5 @@
 package com.dalmuri.dalmuri.presentation.create
 
-import androidx.compose.runtime.Immutable
-
-@Immutable
 data class CreateState(
     val learned: String = "",
     val obstacles: String = "",

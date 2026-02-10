@@ -1,4 +1,4 @@
-package com.dalmuri.dalmuri.presentation.create
+package com.dalmuri.dalmuri.presentation.create.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dalmuri.dalmuri.presentation.create.CreateIntent
+import com.dalmuri.dalmuri.presentation.create.CreateSideEffect
+import com.dalmuri.dalmuri.presentation.create.CreateState
+import com.dalmuri.dalmuri.presentation.create.CreateViewModel
 import com.dalmuri.dalmuri.presentation.create.components.CreateBottomButton
 import com.dalmuri.dalmuri.presentation.create.components.CreateInputArea
 import com.dalmuri.dalmuri.presentation.create.components.CreateTitleText
