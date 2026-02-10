@@ -23,8 +23,8 @@ fun CreateTopBar(
     Row(
         modifier =
             modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .fillMaxWidth(),
+//                .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBackClick) {
@@ -35,7 +35,7 @@ fun CreateTopBar(
             modifier =
                 Modifier
                     .weight(1f)
-                    .padding(end = 8.dp)
+                    .padding(end = 16.dp)
                     .height(8.dp),
         )
     }
