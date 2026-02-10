@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.dalmuri.dalmuri.presentation.theme.DalmuriTheme
 
 @Composable
-fun HomeScreen(onFabClick: () -> Unit) {
+fun HomeScreen(navigateToCreateToday: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -22,7 +22,7 @@ fun HomeScreen(onFabClick: () -> Unit) {
         Text(text = "Home Screen")
 
         FloatingActionButton(
-            onClick = onFabClick,
+            onClick = navigateToCreateToday,
             modifier = Modifier.align(Alignment.BottomEnd),
         ) { Icon(imageVector = Icons.Default.Add, contentDescription = "Create TIL") }
     }
@@ -31,5 +31,5 @@ fun HomeScreen(onFabClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
-    DalmuriTheme { HomeScreen(onFabClick = {}) }
+    DalmuriTheme { HomeScreen(navigateToCreateToday = {}) }
 }

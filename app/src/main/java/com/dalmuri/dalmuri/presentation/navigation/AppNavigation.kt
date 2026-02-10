@@ -40,7 +40,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(innerPadding),
         ) {
             composable<MainRoute.Home> {
-                HomeScreen(onFabClick = { navController.navigate(CreateRoute.Today) })
+                HomeScreen(navigateToCreateToday = { navController.navigate(CreateRoute.Today) })
             }
 
             createGraph(navController)
