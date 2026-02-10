@@ -7,7 +7,7 @@ data class Til(
     val obstacles: String? = null, // 어려웠던 점 (선택)
     val tomorrow: String? = null, // 내일 할 일 (선택)
     val createdAt: Long, // 생성 일시 (timestamp)
-    val updatedAt: Long? = null, // 수정 일시 (timestamp)
+    val updatedAt: Long? = createdAt, // 수정 일시 (timestamp)
     // AI 분석 결과 // 상세 화면 내 첫 카드
     val emotion: String? = null, // 감정 (AI 분석 결과)
     val emotionScore: Int? = null, // 감정 점수 (1-5)
