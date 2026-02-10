@@ -12,7 +12,7 @@ data class TilEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String, // TIL 제목
     val learned: String, // 오늘 배운 것
-    val difficulty: String? = null, // 어려웠던 점 (선택)
+    val obstacles: String? = null, // 어려웠던 점 (선택)
     val tomorrow: String? = null, // 내일 할 일 (선택)
     val createdAt: Long, // 생성 일시 (timestamp)
     val updatedAt: Long? = null, // 수정 일시 (timestamp)
