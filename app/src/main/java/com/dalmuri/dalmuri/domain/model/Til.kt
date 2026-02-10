@@ -13,4 +13,14 @@ data class Til(
     val emotionScore: Int? = null, // 감정 점수 (1-5)
     val difficultyLevel: String? = null, // 난이도 (쉬움, 보통 등)
     val aiComment: String? = null, // AI의 한줄 응원/조언
-)
+) {
+    val emoji: String
+        get() =
+            when (emotionScore) {
+                5 -> "🎉"
+                4 -> "😊"
+                3 -> "😐"
+                2 -> "😓"
+                else -> "😢"
+            }
+}
