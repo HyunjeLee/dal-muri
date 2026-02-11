@@ -41,7 +41,9 @@ sealed interface CreateSideEffect {
 
     data object NavigateToWrapUp : CreateSideEffect
 
-    data object NavigateToDetail : CreateSideEffect
+    data class NavigateToDetail(
+        val id: Long,
+    ) : CreateSideEffect
 
     data class ShowToast(
         val message: String,

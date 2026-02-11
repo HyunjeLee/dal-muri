@@ -38,9 +38,9 @@ import androidx.compose.ui.unit.sp
 import com.dalmuri.dalmuri.data.dummy.TilDummyGenerator
 import com.dalmuri.dalmuri.domain.model.Til
 import com.dalmuri.dalmuri.presentation.theme.DalmuriTheme
+import com.dalmuri.dalmuri.presentation.utils.toFormattedTime
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -139,7 +139,7 @@ private fun TilItem(til: Til) {
                 )
                 Spacer(modifier = Modifier.padding(2.dp))
                 Text(
-                    text = formatTime(til.createdAt),
+                    text = til.createdAt.toFormattedTime(),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -171,11 +171,6 @@ private fun isSameDay(
 ): Boolean =
     cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
         cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
-
-private fun formatTime(timestamp: Long): String {
-    val sdf = SimpleDateFormat("a h:mm", Locale.getDefault())
-    return sdf.format(Date(timestamp))
-}
 
 @Preview(showBackground = true)
 @Composable

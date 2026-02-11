@@ -86,7 +86,7 @@ class CreateViewModel
                     saveResult.fold(
                         onSuccess = { id ->
                             Log.d("CreateViewModel", "Created TIL ID: $id")
-                            _effect.send(CreateSideEffect.NavigateToDetail)
+                            _effect.send(CreateSideEffect.NavigateToDetail(id))
                         },
                         onFailure = { err ->
                             throw err

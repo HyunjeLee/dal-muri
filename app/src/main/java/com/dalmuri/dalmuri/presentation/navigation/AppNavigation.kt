@@ -45,15 +45,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             createGraph(navController)
 
-            composable<DetailRoute> {
-                DetailScreen(
-                    onBack = {
-                        navController.navigate(MainRoute.Home) {
-                            popUpTo<MainRoute.Home> { inclusive = true }
-                        }
-                    },
-                )
-            }
+            composable<DetailRoute> { DetailScreen() }
 
             composable<MainRoute.Summary> { SummaryScreen() }
 

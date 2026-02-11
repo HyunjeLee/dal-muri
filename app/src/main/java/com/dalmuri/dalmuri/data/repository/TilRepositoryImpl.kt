@@ -1,6 +1,7 @@
 package com.dalmuri.dalmuri.data.repository
 
-import com.dalmuri.dalmuri.data.local.dao.TilDao
+import com.dalmuri.dalmuri.data.local.datasource.TilLocalDataSource
+import com.dalmuri.dalmuri.data.mapper.toDomain
 import com.dalmuri.dalmuri.data.mapper.toEntity
 import com.dalmuri.dalmuri.data.remote.datasource.TilRemoteDataSource
 import com.dalmuri.dalmuri.domain.model.Til
@@ -11,7 +12,7 @@ class TilRepositoryImpl
     @Inject
     constructor(
         private val remoteDataSource: TilRemoteDataSource,
-        private val tilDao: TilDao,
+        private val localDataSource: TilLocalDataSource,
     ) : TilRepository {
         override suspend fun analyzeTil(
             title: String,
@@ -28,8 +29,20 @@ class TilRepositoryImpl
 
         override suspend fun saveTil(til: Til): Result<Long> =
             try {
-                val id = tilDao.insertTil(til.toEntity())
+                val id = localDataSource.insertTil(til.toEntity())
                 Result.success(id)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun getTil(id: Long): Result<Til> =
+            try {
+                val entity = localDataSource.getTilById(id)
+                if (entity != null) {
+                    Result.success(entity.toDomain())
+                } else {
+                    Result.failure(NoSuchElementException("TIL not found with id: $id"))
+                }
             } catch (e: Exception) {
                 Result.failure(e)
             }

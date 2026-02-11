@@ -11,4 +11,6 @@ interface TilRepository {
     ): Result<Til.AiAnalysis>
 
     suspend fun saveTil(til: Til): Result<Long>
+
+    suspend fun getTil(id: Long): Result<Til>
 }

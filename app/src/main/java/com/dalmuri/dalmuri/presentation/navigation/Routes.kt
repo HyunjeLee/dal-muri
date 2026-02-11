@@ -25,4 +25,6 @@ sealed interface CreateRoute {
 }
 
 @Serializable
-data object DetailRoute
+data class DetailRoute(
+    val id: Long,
+)

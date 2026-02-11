@@ -64,8 +64,8 @@ fun NavGraphBuilder.createGraph(navController: NavController) {
 
             CreateWrapUpScreen(
                 onBack = { navController.popBackStack() },
-                onFinish = {
-                    navController.navigate(DetailRoute) {
+                onFinish = { id ->
+                    navController.navigate(DetailRoute(id = id)) {
                         popUpTo<CreateRoute.Today> { inclusive = true }
                     }
                 },

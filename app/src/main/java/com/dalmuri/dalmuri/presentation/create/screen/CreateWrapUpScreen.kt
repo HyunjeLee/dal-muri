@@ -42,7 +42,7 @@ private const val WRAP_UP_HINT = "A one-line summary of today's learning."
 
 @Composable
 fun CreateWrapUpScreen(
-    onFinish: () -> Unit,
+    onFinish: (Long) -> Unit,
     onBack: () -> Unit,
     viewModel: CreateViewModel,
 ) {
@@ -52,7 +52,7 @@ fun CreateWrapUpScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                CreateSideEffect.NavigateToDetail -> onFinish()
+                is CreateSideEffect.NavigateToDetail -> onFinish(effect.id)
                 is CreateSideEffect.ShowToast -> {
                     Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                 }
