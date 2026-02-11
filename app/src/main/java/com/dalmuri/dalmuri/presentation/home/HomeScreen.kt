@@ -68,15 +68,18 @@ fun HomeScreen(
         HomeContent(
             uiState = uiState,
             onTilClick = { id -> viewModel.handleIntent(HomeContract.Intent.OnTilClick(id)) },
+            onDeleteClick = { id -> viewModel.handleIntent(HomeContract.Intent.OnDeleteClick(id)) },
             modifier = Modifier.padding(innerPadding),
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
     uiState: HomeContract.HomeUiState,
     onTilClick: (Long) -> Unit,
+    onDeleteClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AnimatedContent(
@@ -112,8 +115,12 @@ fun HomeContent(
                     ) {
                         groupedTils.forEach { (dateHeader, tilList) ->
                             item { DateHeader(dateHeader) }
-                            items(tilList) { til ->
-                                TilItem(til = til, onClick = { onTilClick(til.id) })
+                            items(tilList, key = { it.id }) { til ->
+                                TilItem(
+                                    til = til,
+                                    onTilClick = onTilClick,
+                                    onDeleteClick = onDeleteClick,
+                                )
                             }
                         }
                     }

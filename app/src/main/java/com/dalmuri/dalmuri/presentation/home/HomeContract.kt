@@ -36,6 +36,10 @@ class HomeContract {
         ) : Intent
 
         data object OnFabClick : Intent
+
+        data class OnDeleteClick(
+            val id: Long,
+        ) : Intent
     }
 
     sealed interface SideEffect {

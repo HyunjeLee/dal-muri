@@ -1,5 +1,6 @@
 package com.dalmuri.dalmuri.presentation.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dalmuri.dalmuri.domain.usecase.GetAllTilsUseCase
@@ -46,6 +47,10 @@ class HomeViewModel
                     viewModelScope.launch {
                         _sideEffect.emit(HomeContract.SideEffect.NavigateToCreateToday)
                     }
+                }
+                is HomeContract.Intent.OnDeleteClick -> {
+                    // TODO: 삭제 로직 필요
+                    Log.d("MYTAG", "삭제 완료")
                 }
             }
         }
