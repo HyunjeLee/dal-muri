@@ -6,6 +6,8 @@ import com.dalmuri.dalmuri.data.mapper.toEntity
 import com.dalmuri.dalmuri.data.remote.datasource.TilRemoteDataSource
 import com.dalmuri.dalmuri.domain.model.Til
 import com.dalmuri.dalmuri.domain.repository.TilRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class TilRepositoryImpl
@@ -46,4 +48,6 @@ class TilRepositoryImpl
             } catch (e: Exception) {
                 Result.failure(e)
             }
+
+        override fun getAllTils(): Flow<List<Til>> = localDataSource.getAllTils().map { entities -> entities.map { it.toDomain() } }
     }

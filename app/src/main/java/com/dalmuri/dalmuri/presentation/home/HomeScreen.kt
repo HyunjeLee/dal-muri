@@ -1,179 +1,124 @@
 package com.dalmuri.dalmuri.presentation.home
 
-import androidx.compose.foundation.background
+import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.dalmuri.dalmuri.data.dummy.TilDummyGenerator
-import com.dalmuri.dalmuri.domain.model.Til
-import com.dalmuri.dalmuri.presentation.theme.DalmuriTheme
-import com.dalmuri.dalmuri.presentation.utils.toFormattedTime
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dalmuri.dalmuri.presentation.home.components.DateHeader
+import com.dalmuri.dalmuri.presentation.home.components.HomeEmptyContent
+import com.dalmuri.dalmuri.presentation.home.components.HomeTopBar
+import com.dalmuri.dalmuri.presentation.home.components.TilItem
+import com.dalmuri.dalmuri.presentation.home.utils.HomeUtils
+import kotlin.collections.component1
+import kotlin.collections.component2
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navigateToCreateToday: () -> Unit) {
-    val tils = remember { TilDummyGenerator.generateDummyTils() }
-    val groupedTils = remember(tils) { groupTilsByDate(tils) }
+fun HomeScreen(
+    navigateToCreateToday: () -> Unit,
+    navigateToDetail: (Long) -> Unit,
+    viewModel: HomeViewModel = hiltViewModel(),
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val uiState = state.toUiState()
+
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                is HomeContract.SideEffect.NavigateToDetail -> navigateToDetail(sideEffect.id)
+                HomeContract.SideEffect.NavigateToCreateToday -> navigateToCreateToday()
+                is HomeContract.SideEffect.ShowError -> {
+                    Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "📚 TIL 기록장",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-            )
-        },
+        topBar = { HomeTopBar() },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = navigateToCreateToday,
+                onClick = { viewModel.handleIntent(HomeContract.Intent.OnFabClick) },
             ) { Icon(imageVector = Icons.Default.Add, contentDescription = "Create TIL") }
         },
         contentWindowInsets = WindowInsets(0.dp),
     ) { innerPadding ->
-        LazyColumn(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            groupedTils.forEach { (dateHeader, tilList) ->
-                item { DateHeader(dateHeader) }
-                items(tilList) { til -> TilItem(til) }
-            }
-        }
-    }
-}
-
-@Composable
-private fun DateHeader(dateText: String) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp),
-    ) {
-        HorizontalDivider(
-            modifier = Modifier.padding(bottom = 8.dp),
-            thickness = 1.dp,
-            color = Color.LightGray,
-        )
-        Text(
-            text = dateText,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
+        HomeContent(
+            uiState = uiState,
+            onTilClick = { id -> viewModel.handleIntent(HomeContract.Intent.OnTilClick(id)) },
+            modifier = Modifier.padding(innerPadding),
         )
     }
 }
 
 @Composable
-private fun TilItem(til: Til) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            // Emotion Emoji Circle
-            Box(
-                modifier =
-                    Modifier
-                        .size(48.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.onTertiary,
-                            shape = CircleShape,
-                        ),
-                contentAlignment = Alignment.Center,
-            ) { Text(text = til.emoji, fontSize = 16.sp) }
+fun HomeContent(
+    uiState: HomeContract.HomeUiState,
+    onTilClick: (Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    AnimatedContent(
+        targetState = uiState,
+        transitionSpec = { fadeIn() togetherWith fadeOut() },
+        label = "HomeContentTransition",
+    ) { state ->
+        Box(modifier = modifier.fillMaxSize()) {
+            when (state) {
+                is HomeContract.HomeUiState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
 
-            Spacer(modifier = Modifier.width(16.dp))
+                is HomeContract.HomeUiState.Error -> {
+                    Text(
+                        text = state.message,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
 
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = til.title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-                Spacer(modifier = Modifier.padding(2.dp))
-                Text(
-                    text = til.createdAt.toFormattedTime(),
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                is HomeContract.HomeUiState.Success -> {
+                    if (state.tils.isEmpty()) {
+                        HomeEmptyContent()
+                        return@Box
+                    }
+
+                    val groupedTils = remember(state.tils) { HomeUtils.groupTilsByDate(state.tils) }
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(bottom = 80.dp),
+                    ) {
+                        groupedTils.forEach { (dateHeader, tilList) ->
+                            item { DateHeader(dateHeader) }
+                            items(tilList) { til ->
+                                TilItem(til = til, onClick = { onTilClick(til.id) })
+                            }
+                        }
+                    }
+                }
             }
         }
     }
-}
-
-// Helper function to group TILs by date
-private fun groupTilsByDate(tils: List<Til>): Map<String, List<Til>> {
-    val today = Calendar.getInstance()
-    val yesterday = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }
-
-    val dateFormat = SimpleDateFormat("yy.MM.dd", Locale.getDefault())
-
-    return tils.sortedByDescending { it.createdAt }.groupBy { til ->
-        val tilDate = Calendar.getInstance().apply { timeInMillis = til.createdAt }
-
-        when {
-            isSameDay(today, tilDate) -> "Today"
-            isSameDay(yesterday, tilDate) -> "Yesterday"
-            else -> dateFormat.format(tilDate.time)
-        }
-    }
-}
-
-private fun isSameDay(
-    cal1: Calendar,
-    cal2: Calendar,
-): Boolean =
-    cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-        cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
-
-@Preview(showBackground = true)
-@Composable
-private fun HomeScreenPreview() {
-    DalmuriTheme { HomeScreen(navigateToCreateToday = {}) }
 }

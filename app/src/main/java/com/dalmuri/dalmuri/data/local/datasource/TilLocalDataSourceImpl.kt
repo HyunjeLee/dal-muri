@@ -2,6 +2,7 @@ package com.dalmuri.dalmuri.data.local.datasource
 
 import com.dalmuri.dalmuri.data.local.dao.TilDao
 import com.dalmuri.dalmuri.data.local.entity.TilEntity
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class TilLocalDataSourceImpl
@@ -12,4 +13,6 @@ class TilLocalDataSourceImpl
         override suspend fun insertTil(til: TilEntity): Long = tilDao.insertTil(til)
 
         override suspend fun getTilById(id: Long): TilEntity? = tilDao.getTilById(id)
+
+        override fun getAllTils(): Flow<List<TilEntity>> = tilDao.getAllTils()
     }
