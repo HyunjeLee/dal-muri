@@ -62,6 +62,7 @@ private fun DetailContent(uiState: DetailState) {
                         fontWeight = FontWeight.Bold,
                     )
                 },
+                modifier = Modifier.padding(16.dp),
             )
         },
     ) { innerPadding ->
@@ -124,8 +125,14 @@ private fun DetailScreenPreview() {
                     til =
                         Til(
                             id = 1,
-                            title = "Sample Title",
-                            learned = "Sample Learned",
+                            title =
+                                "AnchoredDraggable로 훨씬 부드러운 스와이프 인터렉션을 완성했다!",
+                            learned =
+                                "Jetpack Compose의 AnchoredDraggable API를 사용하여 리스트 아이템의 Swipe-to-Delete 기능을 구현했습니다. 기존의 SwipeToDismiss보다 정교한 애니메이션 제어가 가능하다는 점을 배웠습니다.",
+                            obstacles =
+                                "스와이프 시 메뉴가 나타나는 영역의 오프셋 계산이 복잡했습니다. 앵커 포인트를 설정할 때 화면 밀도(Density)를 고려해야 한다는 점을 깨닫고 이를 해결했습니다.\n",
+                            tomorrow =
+                                "삭제 버튼 클릭 시 실제 ViewModel과 연동하여 데이터베이스에서 항목이 삭제되도록 비즈니스 로직을 완성할 예정입니다.\n",
                             createdAt = 0,
                         ),
                 ),
