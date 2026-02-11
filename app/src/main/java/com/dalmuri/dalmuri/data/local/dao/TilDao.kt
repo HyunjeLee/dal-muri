@@ -1,7 +1,6 @@
 package com.dalmuri.dalmuri.data.local.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -31,6 +30,6 @@ interface TilDao {
     ): List<TilEntity>
 
     // TIL 삭제 (스와이프로 삭제 시 사용)
-    @Delete
-    suspend fun deleteTil(til: TilEntity)
+    @Query("DELETE FROM til_items WHERE id = :id")
+    suspend fun deleteTilById(id: Long)
 }

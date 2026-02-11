@@ -16,4 +16,6 @@ interface TilRepository {
     suspend fun getTil(id: Long): Result<Til>
 
     fun getAllTils(): Flow<List<Til>>
+
+    suspend fun deleteTil(id: Long): Result<Unit>
 }

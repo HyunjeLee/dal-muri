@@ -15,4 +15,6 @@ class TilLocalDataSourceImpl
         override suspend fun getTilById(id: Long): TilEntity? = tilDao.getTilById(id)
 
         override fun getAllTils(): Flow<List<TilEntity>> = tilDao.getAllTils()
+
+        override suspend fun deleteTil(id: Long) = tilDao.deleteTilById(id)
     }

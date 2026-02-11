@@ -9,4 +9,6 @@ interface TilLocalDataSource {
     suspend fun getTilById(id: Long): TilEntity?
 
     fun getAllTils(): Flow<List<TilEntity>>
+
+    suspend fun deleteTil(id: Long)
 }

@@ -3,6 +3,7 @@ package com.dalmuri.dalmuri.presentation.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dalmuri.dalmuri.domain.usecase.DeleteTilUseCase
 import com.dalmuri.dalmuri.domain.usecase.GetAllTilsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,6 +23,7 @@ class HomeViewModel
     @Inject
     constructor(
         private val getAllTilsUseCase: GetAllTilsUseCase,
+        private val deleteTilUseCase: DeleteTilUseCase,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(HomeContract.State())
         val uiState: StateFlow<HomeContract.State> = _uiState.asStateFlow()
@@ -36,21 +38,18 @@ class HomeViewModel
         fun handleIntent(intent: HomeContract.Intent) {
             when (intent) {
                 HomeContract.Intent.LoadTils -> loadTils()
-
                 is HomeContract.Intent.OnTilClick -> {
                     viewModelScope.launch {
                         _sideEffect.emit(HomeContract.SideEffect.NavigateToDetail(intent.id))
                     }
                 }
-
                 HomeContract.Intent.OnFabClick -> {
                     viewModelScope.launch {
                         _sideEffect.emit(HomeContract.SideEffect.NavigateToCreateToday)
                     }
                 }
                 is HomeContract.Intent.OnDeleteClick -> {
-                    // TODO: 삭제 로직 필요
-                    Log.d("MYTAG", "삭제 완료")
+                    deleteTil(intent.id)
                 }
             }
         }
@@ -65,6 +64,21 @@ class HomeViewModel
                             HomeContract.SideEffect.ShowError(e.message ?: "Unknown error"),
                         )
                     }.collect { tils -> _uiState.update { it.copy(tils = tils, isLoading = false) } }
+            }
+        }
+
+        private fun deleteTil(id: Long) {
+            viewModelScope.launch {
+                deleteTilUseCase(id)
+                    .onSuccess {
+                        // 목록은 Flow로 관찰 중이므로 DB 삭제 시 자동으로 업데이트됨
+                        Log.d("HomeViewModel", "TIL deleted: $id")
+                    }.onFailure { e ->
+                        Log.e("HomeViewModel", "Failed to delete TIL: $id", e)
+                        _sideEffect.emit(
+                            HomeContract.SideEffect.ShowError(e.message ?: "삭제에 실패했습니다."),
+                        )
+                    }
             }
         }
     }
