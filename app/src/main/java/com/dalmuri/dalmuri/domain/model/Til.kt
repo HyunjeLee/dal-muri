@@ -23,4 +23,11 @@ data class Til(
                 2 -> "😓"
                 else -> "😢"
             }
+
+    data class AiAnalysis(
+        val emotion: String,
+        val emotionScore: Int,
+        val difficultyLevel: String,
+        val comment: String,
+    )
 }
