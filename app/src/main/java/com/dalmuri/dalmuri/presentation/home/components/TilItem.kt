@@ -38,13 +38,14 @@ fun TilItem(
         rememberSwipeToDismissBoxState(
             confirmValueChange = { value ->
                 when (value) {
-                    SwipeToDismissBoxValue.Settled -> {
+                    SwipeToDismissBoxValue.EndToStart -> {
                         onDeleteClick(til.id)
                         true
                     }
                     else -> false
                 }
             },
+            positionalThreshold = { distance -> distance * 0.7f },
         )
 
     SwipeToDismissBox(
