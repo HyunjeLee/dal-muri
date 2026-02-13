@@ -71,7 +71,7 @@ class TilRemoteDataSourceImpl
                   "properties": {
                     "emotion": { 
                       "type": "string", 
-                      "enum": ["성취감", "만족", "평범", "어려움", "좌절"] 
+                      "enum": ["뿌듯함이 가득한 하루", "기분 좋게 만족스러운 하루", "별일 없이 평온한 하루", "조금은 고단했던 하루하루", "마음이 속상했던 하루"] 
                     },
                     "emotionScore": { 
                       "type": "integer",
