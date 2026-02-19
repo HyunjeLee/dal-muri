@@ -1,4 +1,4 @@
-package com.dalmuri.dalmuri.presentation.summary
+package com.dalmuri.dalmuri.presentation.chart
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.dalmuri.dalmuri.presentation.theme.DalmuriTheme
 
 @Composable
-fun SummaryScreen() {
+fun ChartScreen() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -19,6 +19,6 @@ fun SummaryScreen() {
 
 @Preview(showBackground = true)
 @Composable
-private fun SummaryScreenPreview() {
-    DalmuriTheme { SummaryScreen() }
+private fun ChartScreenPreview() {
+    DalmuriTheme { ChartScreen() }
 }

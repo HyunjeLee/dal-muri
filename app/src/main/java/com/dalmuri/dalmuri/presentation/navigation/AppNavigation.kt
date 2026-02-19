@@ -11,11 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.dalmuri.dalmuri.presentation.chart.ChartScreen
 import com.dalmuri.dalmuri.presentation.create.createGraph
 import com.dalmuri.dalmuri.presentation.detail.DetailScreen
 import com.dalmuri.dalmuri.presentation.home.HomeScreen
 import com.dalmuri.dalmuri.presentation.review.ReviewScreen
-import com.dalmuri.dalmuri.presentation.summary.SummaryScreen
 
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
@@ -50,7 +50,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             composable<DetailRoute> { DetailScreen() }
 
-            composable<MainRoute.Summary> { SummaryScreen() }
+            composable<MainRoute.Summary> { ChartScreen() }
 
             composable<MainRoute.Review> { ReviewScreen() }
         }
