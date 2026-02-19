@@ -26,7 +26,8 @@ object DatabaseModule {
                 context,
                 AppDatabase::class.java,
                 "til_database",
-            ).build()
+            ).fallbackToDestructiveMigration()
+            .build()
 
     @Provides fun provideTilDao(database: AppDatabase): TilDao = database.tilDao()
 

@@ -39,8 +39,8 @@ class MonthlyReportDaoTest {
             val report =
                 MonthlyReportEntity(
                     yearMonth = "2025-02",
-                    summaryComment = "Great month!",
-                    learningSummary =
+                    chartSummary = "Great month!",
+                    learningKeyword =
                         listOf(
                             "Room",
                             "Hilt",
@@ -66,8 +66,8 @@ class MonthlyReportDaoTest {
             assertEquals(report, loaded)
 
             assertEquals(report.yearMonth, loaded?.yearMonth)
-            assertEquals(report.summaryComment, loaded?.summaryComment)
-            assertEquals(report.learningSummary, loaded?.learningSummary)
+            assertEquals(report.chartSummary, loaded?.chartSummary)
+            assertEquals(report.learningKeyword, loaded?.learningKeyword)
             assertEquals(report.growthPoints, loaded?.growthPoints)
             assertEquals(report.nextMonthAdvice, loaded?.nextMonthAdvice)
             assertEquals(report.createdAt, loaded?.createdAt)
