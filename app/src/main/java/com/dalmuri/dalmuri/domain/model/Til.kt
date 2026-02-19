@@ -1,5 +1,7 @@
 package com.dalmuri.dalmuri.domain.model
 
+import com.dalmuri.dalmuri.presentation.utils.toEmoji
+
 data class Til(
     val id: Long = 0,
     val title: String, // TIL 제목
@@ -15,14 +17,7 @@ data class Til(
     val aiComment: String? = null, // AI의 한줄 응원/조언
 ) {
     val emoji: String
-        get() =
-            when (emotionScore) {
-                5 -> "🎉"
-                4 -> "😊"
-                3 -> "😐"
-                2 -> "😓"
-                else -> "😢"
-            }
+        get() = emotionScore?.toEmoji() ?: "😐"
 
     data class AiAnalysis(
         val emotion: String,
