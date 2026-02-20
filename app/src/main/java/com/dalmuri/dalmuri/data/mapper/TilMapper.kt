@@ -1,6 +1,7 @@
 package com.dalmuri.dalmuri.data.mapper
 
 import com.dalmuri.dalmuri.data.local.entity.TilEntity
+import com.dalmuri.dalmuri.domain.model.Emotion
 import com.dalmuri.dalmuri.domain.model.Til
 
 fun TilEntity.toDomain(): Til =
@@ -13,7 +14,7 @@ fun TilEntity.toDomain(): Til =
         createdAt = createdAt,
         updatedAt = updatedAt,
         emotion = emotion,
-        emotionScore = emotionScore,
+        emotionScore = Emotion.fromScore(emotionScore),
         difficultyLevel = difficultyLevel,
         aiComment = aiComment,
     )
@@ -28,7 +29,7 @@ fun Til.toEntity(): TilEntity =
         createdAt = createdAt,
         updatedAt = updatedAt,
         emotion = emotion,
-        emotionScore = emotionScore,
+        emotionScore = emotionScore?.score,
         difficultyLevel = difficultyLevel,
         aiComment = aiComment,
     )

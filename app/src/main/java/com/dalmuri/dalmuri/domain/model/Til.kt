@@ -1,6 +1,6 @@
 package com.dalmuri.dalmuri.domain.model
 
-import com.dalmuri.dalmuri.presentation.utils.toEmoji
+import com.dalmuri.dalmuri.presentation.utils.emoji
 
 data class Til(
     val id: Long = 0,
@@ -12,12 +12,12 @@ data class Til(
     val updatedAt: Long? = createdAt, // 수정 일시 (timestamp)
     // AI 분석 결과 // 상세 화면 내 첫 카드
     val emotion: String? = null, // 감정 (AI 분석 결과)
-    val emotionScore: Int? = null, // 감정 점수 (1-5)
+    val emotionScore: Emotion? = null, // 감정 점수 Enum
     val difficultyLevel: String? = null, // 난이도 (쉬움, 보통 등)
     val aiComment: String? = null, // AI의 한줄 응원/조언
 ) {
     val emoji: String
-        get() = emotionScore?.toEmoji() ?: "😐"
+        get() = this.emotionScore.emoji
 
     data class AiAnalysis(
         val emotion: String,

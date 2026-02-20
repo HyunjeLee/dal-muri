@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dalmuri.dalmuri.domain.model.Emotion
 import com.dalmuri.dalmuri.domain.model.Til
 import com.dalmuri.dalmuri.presentation.theme.DalmuriTheme
 import com.dalmuri.dalmuri.presentation.utils.toFormattedDate
@@ -110,7 +111,7 @@ private fun AiAnalysisCardPreview() {
                 learned = "learned~~~",
                 createdAt = System.currentTimeMillis(),
                 emotion = "최고의 하루 !",
-                emotionScore = 5,
+                emotionScore = Emotion.VERY_GOOD,
                 difficultyLevel = "어려움",
                 aiComment = "“\uD83C\uDF7B 목표를 완벽하게 달성하셨네요! 이 기세를 몰아 내일은 더 큰 성장에 도전해 보세요.”",
             ),

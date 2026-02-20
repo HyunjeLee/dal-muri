@@ -1,5 +1,6 @@
 package com.dalmuri.dalmuri.domain.usecase
 
+import com.dalmuri.dalmuri.domain.model.Emotion
 import com.dalmuri.dalmuri.domain.model.Til
 import com.dalmuri.dalmuri.domain.repository.TilRepository
 import javax.inject.Inject
@@ -24,7 +25,7 @@ class SaveTilUseCase
                     tomorrow = tomorrow.ifBlank { null },
                     createdAt = System.currentTimeMillis(),
                     emotion = aiAnalysis?.emotion,
-                    emotionScore = aiAnalysis?.emotionScore,
+                    emotionScore = Emotion.fromScore(aiAnalysis?.emotionScore),
                     difficultyLevel = aiAnalysis?.difficultyLevel,
                     aiComment = aiAnalysis?.comment,
                 )
