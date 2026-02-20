@@ -90,4 +90,6 @@ dependencies {
     implementation(libs.converter.kotlinx.serialization)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
+
+    implementation(libs.vico.compose.m3)
 }
