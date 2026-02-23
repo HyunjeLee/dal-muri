@@ -3,6 +3,9 @@ package com.dalmuri.dalmuri.domain.usecase
 import com.dalmuri.dalmuri.domain.model.Emotion
 import com.dalmuri.dalmuri.domain.model.MonthlyChartData
 import com.dalmuri.dalmuri.domain.repository.TilRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import java.time.YearMonth
 import java.util.Calendar
 import javax.inject.Inject
@@ -12,39 +15,45 @@ class GetMonthlyChartDataUseCase
     constructor(
         private val repository: TilRepository,
     ) {
-        suspend operator fun invoke(
+        operator fun invoke(
             year: Int,
             month: Int,
-        ): Result<MonthlyChartData> {
+        ): Flow<Result<MonthlyChartData>> {
             val (startTime, endTime) = getMonthRange(year, month)
 
-            return repository.getTilsByMonth(startTime, endTime).map { tils ->
-                val emotionCounts =
-                    tils.mapNotNull { it.emotionScore }.groupBy { it }.mapValues { it.value.size }
+            return repository
+                .getTilsByMonth(startTime, endTime)
+                .map { tils ->
+                    val emotionCounts =
+                        tils.mapNotNull { it.emotionScore }.groupBy { it }.mapValues {
+                            it.value.size
+                        }
 
-                val dailyEmotionScores =
-                    tils.sortedBy { it.createdAt }.map {
-                        MonthlyChartData.DailyEmotion(
-                            timestamp = it.createdAt,
-                            emotion = it.emotionScore ?: Emotion.NORMAL,
-                        )
-                    }
+                    val dailyEmotionScores =
+                        tils.sortedBy { it.createdAt }.map {
+                            MonthlyChartData.DailyEmotion(
+                                timestamp = it.createdAt,
+                                emotion = it.emotionScore ?: Emotion.NORMAL,
+                            )
+                        }
 
-                val averageScore =
-                    if (tils.isNotEmpty()) {
-                        tils.sumOf { it.emotionScore?.score ?: 0 }.toFloat() / tils.size
-                    } else {
-                        0f
-                    }
+                    val averageScore =
+                        if (tils.isNotEmpty()) {
+                            tils.sumOf { it.emotionScore?.score ?: 0 }.toFloat() / tils.size
+                        } else {
+                            0f
+                        }
 
-                MonthlyChartData(
-                    yearMonth = YearMonth.of(year, month),
-                    emotionCounts = emotionCounts,
-                    dailyEmotionScores = dailyEmotionScores,
-                    totalTilCount = tils.size,
-                    averageEmotionScore = averageScore,
-                )
-            }
+                    Result.success(
+                        MonthlyChartData(
+                            yearMonth = YearMonth.of(year, month),
+                            emotionCounts = emotionCounts,
+                            dailyEmotionScores = dailyEmotionScores,
+                            totalTilCount = tils.size,
+                            averageEmotionScore = averageScore,
+                        ),
+                    )
+                }.catch { e -> emit(Result.failure(e)) }
         }
 
         private fun getMonthRange(

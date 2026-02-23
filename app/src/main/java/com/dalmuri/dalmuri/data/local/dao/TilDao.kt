@@ -24,10 +24,10 @@ interface TilDao {
     // 특정 월의 TIL들만 가져오기 (통계 및 회고 생성용)
     // timestamp를 활용해 해당 월의 시작~끝 범위 조회
     @Query("SELECT * FROM til_items WHERE createdAt BETWEEN :startTime AND :endTime ORDER BY createdAt ASC")
-    suspend fun getTilsByMonth(
+    fun getTilsByMonth(
         startTime: Long,
         endTime: Long,
-    ): List<TilEntity>
+    ): Flow<List<TilEntity>>
 
     // TIL 삭제 (스와이프로 삭제 시 사용)
     @Query("DELETE FROM til_items WHERE id = :id")

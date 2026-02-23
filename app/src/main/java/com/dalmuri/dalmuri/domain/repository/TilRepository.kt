@@ -17,10 +17,10 @@ interface TilRepository {
 
     fun getAllTils(): Flow<List<Til>>
 
-    suspend fun getTilsByMonth(
+    fun getTilsByMonth(
         startTime: Long,
         endTime: Long,
-    ): Result<List<Til>>
+    ): Flow<List<Til>>
 
     suspend fun deleteTil(id: Long): Result<Unit>
 }

@@ -14,8 +14,6 @@ class ChartContract {
     )
 
     sealed class Intent {
-        object LoadStats : Intent()
-
         data class ChangeMonth(
             val delta: Int,
         ) : Intent()

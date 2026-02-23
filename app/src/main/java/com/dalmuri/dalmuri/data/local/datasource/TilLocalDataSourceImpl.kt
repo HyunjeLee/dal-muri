@@ -16,10 +16,10 @@ class TilLocalDataSourceImpl
 
         override fun getAllTils(): Flow<List<TilEntity>> = tilDao.getAllTils()
 
-        override suspend fun getTilsByMonth(
+        override fun getTilsByMonth(
             startTime: Long,
             endTime: Long,
-        ): List<TilEntity> = tilDao.getTilsByMonth(startTime, endTime)
+        ): Flow<List<TilEntity>> = tilDao.getTilsByMonth(startTime, endTime)
 
         override suspend fun deleteTil(id: Long) = tilDao.deleteTilById(id)
     }
