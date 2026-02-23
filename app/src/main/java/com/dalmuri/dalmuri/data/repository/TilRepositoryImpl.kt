@@ -51,6 +51,17 @@ class TilRepositoryImpl
 
         override fun getAllTils(): Flow<List<Til>> = localDataSource.getAllTils().map { entities -> entities.map { it.toDomain() } }
 
+        override suspend fun getTilsByMonth(
+            startTime: Long,
+            endTime: Long,
+        ): Result<List<Til>> =
+            try {
+                val entities = localDataSource.getTilsByMonth(startTime, endTime)
+                Result.success(entities.map { it.toDomain() })
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
         override suspend fun deleteTil(id: Long): Result<Unit> =
             try {
                 localDataSource.deleteTil(id)

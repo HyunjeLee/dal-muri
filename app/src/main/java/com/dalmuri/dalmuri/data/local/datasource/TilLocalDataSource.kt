@@ -10,5 +10,10 @@ interface TilLocalDataSource {
 
     fun getAllTils(): Flow<List<TilEntity>>
 
+    suspend fun getTilsByMonth(
+        startTime: Long,
+        endTime: Long,
+    ): List<TilEntity>
+
     suspend fun deleteTil(id: Long)
 }
