@@ -2,6 +2,8 @@ package com.dalmuri.dalmuri.presentation.chart
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dalmuri.dalmuri.domain.model.MonthlyChartData
+import com.dalmuri.dalmuri.domain.usecase.AnalyzeMonthlyChartDataUseCase
 import com.dalmuri.dalmuri.domain.usecase.GetMonthlyChartDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,9 +14,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -23,6 +25,7 @@ class ChartViewModel
     @Inject
     constructor(
         private val getMonthlyChartDataUseCase: GetMonthlyChartDataUseCase,
+        private val analyzeMonthlyChartDataUseCase: AnalyzeMonthlyChartDataUseCase,
     ) : ViewModel() {
         private val year = MutableStateFlow(ChartContract.State().year)
         private val month = MutableStateFlow(ChartContract.State().month)
@@ -61,38 +64,79 @@ class ChartViewModel
             year: Int,
             month: Int,
         ): Flow<ChartContract.State> =
-            getMonthlyChartDataUseCase(year, month)
-                .map { result ->
-                    result.fold(
-                        onSuccess = { stats ->
-                            ChartContract.State(
-                                year = year,
-                                month = month,
-                                stats = stats,
-                                isLoading = false,
-                            )
-                        },
-                        onFailure = { error ->
-                            _effect.emit(
-                                ChartContract.SideEffect.ShowError(
-                                    error.message ?: "Unknown error",
-                                ),
-                            )
-                            ChartContract.State(
-                                year = year,
-                                month = month,
-                                error = error.message,
-                                isLoading = false,
-                            )
-                        },
+            flow {
+                var state =
+                    ChartContract.State(
+                        year = year,
+                        month = month,
+                        isLoading = true,
+                        isAiLoading = true,
                     )
-                }.onStart {
-                    emit(
-                        ChartContract.State(
-                            year = year,
-                            month = month,
-                            isLoading = true,
-                        ),
-                    )
+
+                emit(state)
+
+                getMonthlyChartDataUseCase(year, month).collect { result ->
+                    state = handleResult(result, state)
+                    emit(state)
+
+                    when (isAnalyzeRequired(state)) {
+                        true -> {
+                            state = fetchAiAnalyze(state)
+                            emit(state)
+                        }
+
+                        false -> {
+                            state = state.copy(isAiLoading = false)
+                            emit(state)
+                        }
+                    }
                 }
+            }
+
+        private fun handleResult(
+            result: Result<MonthlyChartData>,
+            state: ChartContract.State,
+        ): ChartContract.State =
+            result.fold(
+                onSuccess = { stats ->
+                    state.copy(isLoading = false, stats = stats)
+                },
+                onFailure = { error ->
+                    viewModelScope.launch {
+                        _effect.emit(
+                            ChartContract.SideEffect.ShowError(
+                                error.message ?: "Unknown error",
+                            ),
+                        )
+                    }
+                    state.copy(isLoading = false, isAiLoading = false, error = error.message)
+                },
+            )
+
+        private fun isAnalyzeRequired(state: ChartContract.State): Boolean {
+            val stats = state.stats ?: return false
+
+            return stats.totalTilCount > 0 && state.aiChartSummary == null // todo: 조건에 db조회를 통해 이전에 ai 생성 기록 확인 필요 🚨🚨
+        }
+
+        private suspend fun fetchAiAnalyze(state: ChartContract.State): ChartContract.State {
+            val stats = state.stats ?: return state.copy(isAiLoading = false)
+
+            return analyzeMonthlyChartDataUseCase(
+                totalTilCount = stats.totalTilCount,
+                averageEmotionScore = stats.averageEmotionScore,
+                emotionCounts = stats.emotionCounts,
+            ).fold(
+                onSuccess = { summary ->
+                    state.copy(isAiLoading = false, aiChartSummary = summary)
+                    // todo: 저장 필요
+                },
+                onFailure = {
+                    viewModelScope.launch {
+                        _effect.emit(ChartContract.SideEffect.ShowError("AI 분석에 실패했습니다."))
+                    }
+                    state.copy(isAiLoading = false)
+                },
+            )
+        }
     }

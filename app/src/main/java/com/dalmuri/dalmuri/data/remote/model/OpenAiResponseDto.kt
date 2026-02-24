@@ -39,3 +39,8 @@ data class AiAnalysisDto(
             comment = this.comment,
         )
 }
+
+@Serializable
+data class ChartSummaryDto(
+    val summary: String,
+)

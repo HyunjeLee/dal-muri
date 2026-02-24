@@ -1,6 +1,8 @@
 package com.dalmuri.dalmuri.di
 
+import com.dalmuri.dalmuri.data.repository.ReportRepositoryImpl
 import com.dalmuri.dalmuri.data.repository.TilRepositoryImpl
+import com.dalmuri.dalmuri.domain.repository.ReportRepository
 import com.dalmuri.dalmuri.domain.repository.TilRepository
 import dagger.Binds
 import dagger.Module
@@ -14,4 +16,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindTilRepository(tilRepositoryImpl: TilRepositoryImpl): TilRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindReportRepository(reportRepositoryImpl: ReportRepositoryImpl): ReportRepository
 }

@@ -10,7 +10,7 @@ import com.dalmuri.dalmuri.data.local.entity.TilEntity
 
 @Database(
     entities = [TilEntity::class, MonthlyReportEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 @TypeConverters(RoomConverters::class)

@@ -2,8 +2,6 @@ package com.dalmuri.dalmuri.di
 
 import com.dalmuri.dalmuri.BuildConfig
 import com.dalmuri.dalmuri.data.remote.api.OpenAiApi
-import com.dalmuri.dalmuri.data.remote.datasource.TilRemoteDataSource
-import com.dalmuri.dalmuri.data.remote.datasource.TilRemoteDataSourceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -77,8 +75,4 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOpenAiApi(retrofit: Retrofit): OpenAiApi = retrofit.create(OpenAiApi::class.java)
-
-    @Provides
-    @Singleton
-    fun provideTilRemoteDataSource(api: OpenAiApi): TilRemoteDataSource = TilRemoteDataSourceImpl(api)
 }

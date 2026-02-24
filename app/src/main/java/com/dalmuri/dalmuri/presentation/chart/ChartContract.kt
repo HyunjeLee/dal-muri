@@ -6,11 +6,13 @@ import java.time.LocalDateTime
 
 class ChartContract {
     data class State(
-        val isLoading: Boolean = false,
+        val isLoading: Boolean = true,
         val year: Int = LocalDate.now().year,
         val month: Int = LocalDateTime.now().monthValue,
         val stats: MonthlyChartData? = null,
         val error: String? = null,
+        val isAiLoading: Boolean = true,
+        val aiChartSummary: String? = null,
     )
 
     sealed class Intent {
