@@ -4,6 +4,7 @@ import com.dalmuri.dalmuri.data.local.datasource.ReportLocalDataSource
 import com.dalmuri.dalmuri.data.remote.datasource.ReportRemoteDataSource
 import com.dalmuri.dalmuri.domain.model.Emotion
 import com.dalmuri.dalmuri.domain.repository.ReportRepository
+import java.time.YearMonth
 import javax.inject.Inject
 
 class ReportRepositoryImpl
@@ -38,6 +39,15 @@ class ReportRepositoryImpl
                 )
 
                 Result.success(Unit)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun getChartSummary(yearMonth: YearMonth): Result<String?> =
+            try {
+                val summary = localDataSource.getChartSummary(yearMonth.toString())
+
+                Result.success(summary)
             } catch (e: Exception) {
                 Result.failure(e)
             }

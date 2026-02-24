@@ -15,4 +15,6 @@ class ReportLocalDataSourceImpl
         ) {
             dao.upsertChartSummary(yearMonth, summary, createdAt)
         }
+
+        override suspend fun getChartSummary(yearMonth: String): String? = dao.getReviewByMonth(yearMonth)?.chartSummary
     }

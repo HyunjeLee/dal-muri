@@ -1,6 +1,7 @@
 package com.dalmuri.dalmuri.domain.repository
 
 import com.dalmuri.dalmuri.domain.model.Emotion
+import java.time.YearMonth
 
 interface ReportRepository {
     suspend fun generateChartSummary(
@@ -13,4 +14,6 @@ interface ReportRepository {
         yearMonth: String,
         chartSummary: String,
     ): Result<Unit>
+
+    suspend fun getChartSummary(yearMonth: YearMonth): Result<String?>
 }

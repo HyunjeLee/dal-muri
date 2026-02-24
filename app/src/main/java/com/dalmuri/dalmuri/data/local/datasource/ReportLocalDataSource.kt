@@ -6,4 +6,6 @@ interface ReportLocalDataSource {
         summary: String,
         createdAt: Long,
     )
+
+    suspend fun getChartSummary(yearMonth: String): String?
 }

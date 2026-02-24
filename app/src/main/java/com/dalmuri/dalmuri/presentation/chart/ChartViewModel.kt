@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dalmuri.dalmuri.domain.model.MonthlyChartData
 import com.dalmuri.dalmuri.domain.usecase.AnalyzeMonthlyChartDataUseCase
+import com.dalmuri.dalmuri.domain.usecase.GetChartSummaryUseCase
 import com.dalmuri.dalmuri.domain.usecase.GetMonthlyChartDataUseCase
 import com.dalmuri.dalmuri.domain.usecase.SaveChartSummaryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,7 @@ class ChartViewModel
     constructor(
         private val getMonthlyChartDataUseCase: GetMonthlyChartDataUseCase,
         private val analyzeMonthlyChartDataUseCase: AnalyzeMonthlyChartDataUseCase,
+        private val getChartSummaryUseCase: GetChartSummaryUseCase,
         private val saveChartSummaryUseCase: SaveChartSummaryUseCase,
     ) : ViewModel() {
         private val year = MutableStateFlow(ChartContract.State().year)
@@ -68,6 +70,7 @@ class ChartViewModel
             month: Int,
         ): Flow<ChartContract.State> =
             flow {
+                // 1. 초기 상태
                 var state =
                     ChartContract.State(
                         year = year,
@@ -75,28 +78,22 @@ class ChartViewModel
                         isLoading = true,
                         isAiLoading = true,
                     )
-
                 emit(state)
 
+                // 2. 차트 데이터 가져오기
                 getMonthlyChartDataUseCase(year, month).collect { result ->
-                    state = handleResult(result, state)
+                    state = updateStateWithResult(result, state)
                     emit(state)
 
-                    when (isAnalyzeRequired(state)) {
-                        true -> {
-                            state = fetchAiAnalyze(state)
-                            emit(state)
-                        }
-
-                        false -> {
-                            state = state.copy(isAiLoading = false)
-                            emit(state)
-                        }
+                    // 3. AI 데이터 가져오기 또는 생성
+                    if (result.isSuccess) {
+                        state = processAiSummary(state)
+                        emit(state)
                     }
                 }
             }
 
-        private fun handleResult(
+        private fun updateStateWithResult(
             result: Result<MonthlyChartData>,
             state: ChartContract.State,
         ): ChartContract.State =
@@ -116,10 +113,34 @@ class ChartViewModel
                 },
             )
 
-        private fun isAnalyzeRequired(state: ChartContract.State): Boolean {
-            val stats = state.stats ?: return false
+        private suspend fun processAiSummary(state: ChartContract.State): ChartContract.State {
+            val stats = state.stats ?: return state.copy(isAiLoading = false)
 
-            return stats.totalTilCount > 0 && state.aiChartSummary == null // todo: 조건에 db조회를 통해 이전에 ai 생성 기록 확인 필요 🚨🚨
+            if (stats.totalTilCount == 0) {
+                return state.copy(
+                    aiChartSummary = "이번 달 기록이 아직 없네요. 소중한 하루를 기록해보세요!",
+                    isAiLoading = false,
+                )
+            }
+
+            return getChartSummaryUseCase(stats.yearMonth).fold(
+                onSuccess = { summary ->
+                    when (summary.isNullOrEmpty()) {
+                        true -> fetchAiAnalyze(state)
+                        false -> state.copy(aiChartSummary = summary, isAiLoading = false)
+                    }
+                },
+                onFailure = { error ->
+                    viewModelScope.launch {
+                        _effect.emit(
+                            ChartContract.SideEffect.ShowError(
+                                error.message ?: "Unknown error",
+                            ),
+                        )
+                    }
+                    state.copy(isAiLoading = false, error = error.message)
+                },
+            )
         }
 
         private suspend fun fetchAiAnalyze(state: ChartContract.State): ChartContract.State {
@@ -152,12 +173,8 @@ class ChartViewModel
             summary: String,
         ) {
             saveChartSummaryUseCase(yearMonth, summary).fold(
-                onSuccess = {
-                    Log.d("ChartViewModel", "Chart summary saved successfully")
-                },
-                onFailure = {
-                    Log.e("ChartViewModel", "Failed to save chart summary", it)
-                },
+                onSuccess = { Log.d("ChartViewModel", "Chart summary saved successfully") },
+                onFailure = { Log.e("ChartViewModel", "Failed to save chart summary", it) },
             )
         }
     }
