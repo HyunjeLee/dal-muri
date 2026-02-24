@@ -13,5 +13,5 @@ class AnalyzeMonthlyChartDataUseCase
             totalTilCount: Int,
             averageEmotionScore: Float,
             emotionCounts: Map<Emotion, Int>,
-        ): Result<String> = repository.getChartSummary(totalTilCount, averageEmotionScore, emotionCounts)
+        ): Result<String> = repository.generateChartSummary(totalTilCount, averageEmotionScore, emotionCounts)
     }

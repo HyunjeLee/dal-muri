@@ -21,13 +21,13 @@ class ReportRemoteDataSourceImpl
     ) : ReportRemoteDataSource {
         private val json = Json { ignoreUnknownKeys = true }
 
-        override suspend fun getChartSummary(
+        override suspend fun generateChartSummary(
             totalTilCount: Int,
             averageEmotionScore: Float,
             emotionCounts: Map<Emotion, Int>,
         ): String {
-            val prompt = createChartSummaryPrompt(emotionCounts, totalTilCount, averageEmotionScore)
-            val schemaObject = createResponseSchema()
+            val prompt = generateChartSummaryPrompt(emotionCounts, totalTilCount, averageEmotionScore)
+            val schemaObject = generateResponseSchema()
 
             val textConfig =
                 ResponseTextConfig(
@@ -43,7 +43,7 @@ class ReportRemoteDataSourceImpl
             return parseResponse(response)
         }
 
-        private fun createChartSummaryPrompt(
+        private fun generateChartSummaryPrompt(
             emotionCounts: Map<Emotion, Int>,
             totalTilCount: Int,
             averageEmotionScore: Float,
@@ -74,7 +74,7 @@ class ReportRemoteDataSourceImpl
                 """.trimIndent()
         }
 
-        private fun createResponseSchema(): JsonObject {
+        private fun generateResponseSchema(): JsonObject {
             val schemaString =
                 """
                 {

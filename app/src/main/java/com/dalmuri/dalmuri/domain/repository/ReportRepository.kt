@@ -3,7 +3,7 @@ package com.dalmuri.dalmuri.domain.repository
 import com.dalmuri.dalmuri.domain.model.Emotion
 
 interface ReportRepository {
-    suspend fun getChartSummary(
+    suspend fun generateChartSummary(
         totalTilCount: Int,
         averageEmotionScore: Float,
         emotionCounts: Map<Emotion, Int>, // Emotion to count

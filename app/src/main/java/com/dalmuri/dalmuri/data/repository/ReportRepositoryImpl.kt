@@ -12,14 +12,14 @@ class ReportRepositoryImpl
         private val localDataSource: ReportLocalDataSource,
         private val remoteDataSource: ReportRemoteDataSource,
     ) : ReportRepository {
-        override suspend fun getChartSummary(
+        override suspend fun generateChartSummary(
             totalTilCount: Int,
             averageEmotionScore: Float,
             emotionCounts: Map<Emotion, Int>,
         ): Result<String> =
             try {
                 val chartSummary =
-                    remoteDataSource.getChartSummary(totalTilCount, averageEmotionScore, emotionCounts)
+                    remoteDataSource.generateChartSummary(totalTilCount, averageEmotionScore, emotionCounts)
 
                 Result.success(chartSummary)
             } catch (e: Exception) {
