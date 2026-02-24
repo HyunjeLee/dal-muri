@@ -1,10 +1,12 @@
 package com.dalmuri.dalmuri.presentation.chart
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dalmuri.dalmuri.domain.model.MonthlyChartData
 import com.dalmuri.dalmuri.domain.usecase.AnalyzeMonthlyChartDataUseCase
 import com.dalmuri.dalmuri.domain.usecase.GetMonthlyChartDataUseCase
+import com.dalmuri.dalmuri.domain.usecase.SaveChartSummaryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +28,7 @@ class ChartViewModel
     constructor(
         private val getMonthlyChartDataUseCase: GetMonthlyChartDataUseCase,
         private val analyzeMonthlyChartDataUseCase: AnalyzeMonthlyChartDataUseCase,
+        private val saveChartSummaryUseCase: SaveChartSummaryUseCase,
     ) : ViewModel() {
         private val year = MutableStateFlow(ChartContract.State().year)
         private val month = MutableStateFlow(ChartContract.State().month)
@@ -128,14 +131,32 @@ class ChartViewModel
                 emotionCounts = stats.emotionCounts,
             ).fold(
                 onSuccess = { summary ->
+                    saveChartSummary(
+                        yearMonth = stats.yearMonth.toString(),
+                        summary = summary,
+                    )
+
                     state.copy(isAiLoading = false, aiChartSummary = summary)
-                    // todo: 저장 필요
                 },
                 onFailure = {
                     viewModelScope.launch {
                         _effect.emit(ChartContract.SideEffect.ShowError("AI 분석에 실패했습니다."))
                     }
                     state.copy(isAiLoading = false)
+                },
+            )
+        }
+
+        private suspend fun saveChartSummary(
+            yearMonth: String,
+            summary: String,
+        ) {
+            saveChartSummaryUseCase(yearMonth, summary).fold(
+                onSuccess = {
+                    Log.d("ChartViewModel", "Chart summary saved successfully")
+                },
+                onFailure = {
+                    Log.e("ChartViewModel", "Failed to save chart summary", it)
                 },
             )
         }

@@ -1,5 +1,6 @@
 package com.dalmuri.dalmuri.data.repository
 
+import com.dalmuri.dalmuri.data.local.datasource.ReportLocalDataSource
 import com.dalmuri.dalmuri.data.remote.datasource.ReportRemoteDataSource
 import com.dalmuri.dalmuri.domain.model.Emotion
 import com.dalmuri.dalmuri.domain.repository.ReportRepository
@@ -8,6 +9,7 @@ import javax.inject.Inject
 class ReportRepositoryImpl
     @Inject
     constructor(
+        private val localDataSource: ReportLocalDataSource,
         private val remoteDataSource: ReportRemoteDataSource,
     ) : ReportRepository {
         override suspend fun getChartSummary(
@@ -24,10 +26,19 @@ class ReportRepositoryImpl
                 Result.failure(e)
             }
 
-        override suspend fun saveMonthlyReport(
+        override suspend fun saveChartSummary(
             yearMonth: String,
-            chartSummary: String?,
-        ): Result<Unit> {
-            TODO("Not yet implemented")
-        }
+            chartSummary: String,
+        ): Result<Unit> =
+            try {
+                localDataSource.insertChartSummary(
+                    yearMonth = yearMonth,
+                    summary = chartSummary,
+                    createdAt = System.currentTimeMillis(),
+                )
+
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
     }

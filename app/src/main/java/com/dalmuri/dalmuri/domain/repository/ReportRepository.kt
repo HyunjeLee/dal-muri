@@ -9,8 +9,8 @@ interface ReportRepository {
         emotionCounts: Map<Emotion, Int>, // Emotion to count
     ): Result<String>
 
-    suspend fun saveMonthlyReport(
+    suspend fun saveChartSummary(
         yearMonth: String,
-        chartSummary: String?,
+        chartSummary: String,
     ): Result<Unit>
 }

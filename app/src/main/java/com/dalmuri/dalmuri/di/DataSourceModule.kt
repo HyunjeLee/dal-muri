@@ -1,5 +1,7 @@
 package com.dalmuri.dalmuri.di
 
+import com.dalmuri.dalmuri.data.local.datasource.ReportLocalDataSource
+import com.dalmuri.dalmuri.data.local.datasource.ReportLocalDataSourceImpl
 import com.dalmuri.dalmuri.data.local.datasource.TilLocalDataSource
 import com.dalmuri.dalmuri.data.local.datasource.TilLocalDataSourceImpl
 import com.dalmuri.dalmuri.data.remote.datasource.ReportRemoteDataSource
@@ -22,6 +24,10 @@ abstract class DataSourceModule {
     @Binds
     @Singleton
     abstract fun bindTilRemoteDataSource(tilRemoteDataSourceImpl: TilRemoteDataSourceImpl): TilRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindReportLocalDataSource(reportLocalDataSourceImpl: ReportLocalDataSourceImpl): ReportLocalDataSource
 
     @Binds
     @Singleton
