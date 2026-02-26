@@ -59,3 +59,38 @@ fun generateChartSummaryPrompt(
         }
         """.trimIndent()
 }
+
+fun generateReviewPrompt(
+    totalCount: Int,
+    averageEmotionScore: Float,
+    emotionDistribution: String,
+    tilDetails: String,
+): String =
+    """
+    당신은 성장을 돕는 학습 분석 전문가입니다. 사용자의 한 달간 TIL(Today I Learned) 데이터를 바탕으로 월간 회고 리포트를 작성해주세요.
+
+    [한 달 요약 데이터]
+    - 총 TIL 작성 수: ${totalCount}개
+    - 평균 감정 점수: ${String.format(Locale.getDefault(), "%.1f", averageEmotionScore)}/5
+    - 감정 분포: $emotionDistribution
+
+    [TIL 상세 내역]
+    $tilDetails
+
+    [작성 요구사항]
+    1. 월간 키워드: 학습 내용에서 가장 핵심적인 기술 스택이나 주제를 3~5개 추출하여 해시태그 형식으로 작성하세요. (예: #Kotlin, #Compose)
+    2. Overall Mood: 한 달간의 전반적인 감정 상태를 요약하고 백분율로 표현하세요. (예: Excellent (75%), Good (60%) 등)
+    3. Challenge Mood: 한 달 중 가장 기술적으로 고군분투했거나 어려움을 겪었던 날의 날짜를 찾아 표기하세요. (예: 2026.02.14)
+    4. 성장 포인트: 구체적으로 어떤 기술적 지식이나 문제 해결 능력이 향상되었는지 3~5개를 리스트로 작성하세요.
+    5. 다음 달 조언: 이번 달의 학습 패턴과 남겨진 과제들을 바탕으로 다음 달에 시도해볼 만한 구체적인 조언을 작성하세요. (5~6줄)
+
+    [응답 형식]
+    반드시 아래 JSON 형식으로만 응답하세요:
+    {
+        "learningKeywords": ["#태그1", "#태그2"],
+        "overallMood": "상태 (00%)",
+        "challengeMood": "YYYY.MM.DD",
+        "growthPoints": ["성장포인트1", "성장포인트2", "성장포인트3"],
+        "nextMonthAdvice": "조언 내용"
+    }
+    """.trimIndent()
