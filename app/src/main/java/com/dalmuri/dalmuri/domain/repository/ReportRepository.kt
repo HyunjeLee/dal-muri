@@ -20,4 +20,11 @@ interface ReportRepository {
     ): Result<Unit>
 
     suspend fun getChartSummary(yearMonth: YearMonth): Result<String?>
+
+    suspend fun saveMonthlyReview(
+        yearMonth: YearMonth,
+        review: MonthlyReview,
+    ): Result<Unit>
+
+    suspend fun getMonthlyReview(yearMonth: YearMonth): Result<MonthlyReview?>
 }

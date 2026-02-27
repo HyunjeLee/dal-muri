@@ -27,13 +27,16 @@ abstract class MonthlyReportDao {
     @Query(
         """
         UPDATE monthly_reports 
-        SET learningKeyword = :keywords, growthPoints = :points, nextMonthAdvice = :advice 
+        SET learningKeywords = :keywords, overallMood = :overallMood, challengeDate = :challengeDate, 
+            growthPoints = :points, nextMonthAdvice = :advice 
         WHERE yearMonth = :yearMonth
     """,
     )
     protected abstract suspend fun updateReviewFields(
         yearMonth: String,
         keywords: List<String>,
+        overallMood: String,
+        challengeDate: String,
         points: List<String>,
         advice: String,
     )
@@ -52,12 +55,14 @@ abstract class MonthlyReportDao {
     open suspend fun upsertReviewFields(
         yearMonth: String,
         keywords: List<String>,
+        overallMood: String,
+        challengeDate: String,
         points: List<String>,
         advice: String,
         createdAt: Long,
     ) {
         insertIgnore(MonthlyReportEntity(yearMonth = yearMonth, createdAt = createdAt))
-        updateReviewFields(yearMonth, keywords, points, advice)
+        updateReviewFields(yearMonth, keywords, overallMood, challengeDate, points, advice)
     }
 
     // 특정 월의 회고 가져오기

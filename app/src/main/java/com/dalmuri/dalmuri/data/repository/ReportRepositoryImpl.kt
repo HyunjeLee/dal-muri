@@ -97,4 +97,44 @@ class ReportRepositoryImpl
             } catch (e: Exception) {
                 Result.failure(e)
             }
+
+        override suspend fun saveMonthlyReview(
+            yearMonth: YearMonth,
+            review: MonthlyReview,
+        ): Result<Unit> =
+            try {
+                localDataSource.insertMonthlyReview(
+                    yearMonth = yearMonth.toString(),
+                    keywords = review.keywords,
+                    overallMood = review.overallMood,
+                    challengeDate = review.challengeDate,
+                    points = review.growthPoints,
+                    advice = review.nextMonthAdvice,
+                    createdAt = System.currentTimeMillis(),
+                )
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+
+        override suspend fun getMonthlyReview(yearMonth: YearMonth): Result<MonthlyReview?> =
+            try {
+                val entity = localDataSource.getMonthlyReview(yearMonth.toString())
+
+                if (entity?.learningKeywords != null) {
+                    Result.success(
+                        MonthlyReview(
+                            keywords = entity.learningKeywords,
+                            overallMood = entity.overallMood ?: "",
+                            challengeDate = entity.challengeDate ?: "",
+                            growthPoints = entity.growthPoints ?: emptyList(),
+                            nextMonthAdvice = entity.nextMonthAdvice ?: "",
+                        ),
+                    )
+                } else { // 엔티티가 없거나 차트 생성만 완료된 경우
+                    Result.success(null)
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
     }
