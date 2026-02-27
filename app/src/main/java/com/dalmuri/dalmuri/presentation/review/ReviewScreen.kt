@@ -1,10 +1,12 @@
 package com.dalmuri.dalmuri.presentation.review
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
+import android.R.attr.maxLines
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -20,12 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dalmuri.dalmuri.domain.model.MonthlyReview
-import com.dalmuri.dalmuri.presentation.theme.DalmuriTheme
+import com.patrykandpatrick.vico.compose.cartesian.axis.text
 import kotlinx.coroutines.delay
 
 @Composable
@@ -41,7 +42,7 @@ fun ReviewScreen(viewModel: ReviewViewModel = hiltViewModel()) {
 }
 
 @Composable
-private fun ReviewContent(
+internal fun ReviewContent(
     state: ReviewContract.State,
     onMonthChange: (Int) -> Unit,
 ) {
@@ -249,6 +250,10 @@ private fun EmotionInfoItem(
                 fontWeight = FontWeight.Bold,
             )
             Text(
+                modifier =
+                    Modifier.basicMarquee(
+                        iterations = Int.MAX_VALUE,
+                    ),
                 text = value,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
@@ -322,58 +327,45 @@ private fun AdviceSection(advice: String) {
 
 @Composable
 private fun CustomLoadingText() {
-    var showFirstText by remember { mutableStateOf(true) }
+    // 2. 보여줄 메시지들을 리스트로 정의
+    val messages =
+        remember {
+            listOf(
+                "AI가 지난 한 달을 회고하고 있어요..",
+                "키워드를 찾는 중이에요...",
+                "감정 분석 중이에요...",
+                "성장 포인트를 찾는 중이에요...",
+                "다음 달 조언을 생성 중이에요...",
+            )
+        }
+
+    // 3. 현재 보여줄 메시지의 인덱스 관리
+    var currentIndex by remember { mutableIntStateOf(0) }
+
     LaunchedEffect(Unit) {
         while (true) {
-            delay(1000L)
-            showFirstText = !showFirstText
+            delay(2000L)
+            currentIndex = (currentIndex + 1) % messages.size
         }
     }
-    Box(contentAlignment = Alignment.Center) {
-        AnimatedVisibility(
-            visible = showFirstText,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically(),
-        ) { Text("AI가 지난 한 달을 회고하고 있어요..", textAlign = TextAlign.Center) }
-        AnimatedVisibility(
-            visible = !showFirstText,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically(),
-        ) { Text(text = "성장 포인트를 찾는 중이에요...", textAlign = TextAlign.Center) }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ReviewScreenPreview() {
-    val dummyReview =
-        MonthlyReview(
-            keywords =
-                listOf(
-                    "Kotlin",
-                    "Compose",
-                    "Room",
-                    "Hilt",
-                    "Retrofit",
-                    "OkHttp",
-                    "Coroutines",
-                ),
-            overallMood = "Excellent (75%)",
-            challengeDate = "2026.02.14",
-            growthPoints =
-                listOf(
-                    "Completed Kotlin Advanced Course",
-                    "Built and deployed first Jetpack Compose app screen using MVI pattern",
-                    "Refined UI design skills with Material 3 guidelines and custom components",
-                    "Improved code readability by 20% through refactoring",
-                ),
-            nextMonthAdvice =
-                "Focus on integrating state management with Compose. Try building a small project to practice real-world implementation. Don't forget to take regular breaks to manage stress.",
-        )
-    DalmuriTheme {
-        ReviewContent(
-            state = ReviewContract.State(reviewData = dummyReview, month = 2),
-            onMonthChange = {},
-        )
+    Box(
+        modifier = Modifier.fillMaxWidth().height(48.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        AnimatedContent(
+            targetState = currentIndex,
+            transitionSpec = {
+                (slideInVertically { it } + fadeIn()) togetherWith (slideOutVertically { -it } + fadeOut())
+            },
+            label = "LoadingTextTransition",
+            contentAlignment = Alignment.Center,
+        ) { index ->
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = messages[index],
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
     }
 }
