@@ -179,7 +179,7 @@ private fun KeywordsSection(keywords: List<String>) {
                                 ).padding(horizontal = 12.dp, vertical = 6.dp),
                     ) {
                         Text(
-                            text = "#$keyword",
+                            text = keyword,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSecondaryContainer,
                             fontWeight = FontWeight.Medium,
