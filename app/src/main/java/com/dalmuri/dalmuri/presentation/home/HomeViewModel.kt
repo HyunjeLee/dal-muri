@@ -63,7 +63,17 @@ class HomeViewModel
                         _sideEffect.emit(
                             HomeContract.SideEffect.ShowError(e.message ?: "Unknown error"),
                         )
-                    }.collect { tils -> _uiState.update { it.copy(tils = tils, isLoading = false) } }
+                    }.collect { result ->
+                        result
+                            .onSuccess { tils ->
+                                _uiState.update { it.copy(tils = tils, isLoading = false) }
+                            }.onFailure { e ->
+                                _uiState.update { it.copy(isLoading = false, error = e.message) }
+                                _sideEffect.emit(
+                                    HomeContract.SideEffect.ShowError(e.message ?: "목록을 불러오지 못했습니다."),
+                                )
+                            }
+                    }
             }
         }
 

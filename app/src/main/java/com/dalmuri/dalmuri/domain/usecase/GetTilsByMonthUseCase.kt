@@ -1,16 +1,13 @@
 package com.dalmuri.dalmuri.domain.usecase
 
-import com.dalmuri.dalmuri.domain.model.Emotion
-import com.dalmuri.dalmuri.domain.model.MonthlyChartData
 import com.dalmuri.dalmuri.domain.model.Til
 import com.dalmuri.dalmuri.domain.repository.TilRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.time.YearMonth
 import java.util.Calendar
 import javax.inject.Inject
 
-class GetMonthlyChartDataUseCase
+class GetTilsByMonthUseCase
     @Inject
     constructor(
         private val repository: TilRepository,
@@ -18,48 +15,14 @@ class GetMonthlyChartDataUseCase
         operator fun invoke(
             year: Int,
             month: Int,
-        ): Flow<Result<MonthlyChartData>> {
+        ): Flow<Result<List<Til>>> {
             val (startTime, endTime) = getMonthRange(year, month)
 
             return repository
                 .getTilsByMonth(startTime, endTime)
                 .map { result ->
-                    result.map { tils -> calculateMonthlyChartData(year, month, tils) }
+                    result.map { it }
                 }
-        }
-
-        private fun calculateMonthlyChartData(
-            year: Int,
-            month: Int,
-            tils: List<Til>,
-        ): MonthlyChartData {
-            val emotionCounts =
-                tils.mapNotNull { it.emotionScore }.groupBy { it }.mapValues {
-                    it.value.size
-                }
-
-            val dailyEmotionScores =
-                tils.sortedBy { it.createdAt }.map {
-                    MonthlyChartData.DailyEmotion(
-                        timestamp = it.createdAt,
-                        emotion = it.emotionScore ?: Emotion.NORMAL,
-                    )
-                }
-
-            val averageScore =
-                if (tils.isNotEmpty()) {
-                    tils.sumOf { it.emotionScore?.score ?: 0 }.toFloat() / tils.size
-                } else {
-                    0f
-                }
-
-            return MonthlyChartData(
-                yearMonth = YearMonth.of(year, month),
-                emotionCounts = emotionCounts,
-                dailyEmotionScores = dailyEmotionScores,
-                totalTilCount = tils.size,
-                averageEmotionScore = averageScore,
-            )
         }
 
         private fun getMonthRange(
@@ -70,8 +33,8 @@ class GetMonthlyChartDataUseCase
                 Calendar
                     .getInstance()
                     .apply {
-                        clear()
                         set(year, month - 1, 1, 0, 0, 0)
+                        set(Calendar.MILLISECOND, 0)
                     }.timeInMillis
 
             val end =

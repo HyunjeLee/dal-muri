@@ -10,5 +10,5 @@ class GetAllTilsUseCase
     constructor(
         private val tilRepository: TilRepository,
     ) {
-        operator fun invoke(): Flow<List<Til>> = tilRepository.getAllTils()
+        operator fun invoke(): Flow<Result<List<Til>>> = tilRepository.getAllTils()
     }

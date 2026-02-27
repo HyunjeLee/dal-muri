@@ -1,5 +1,6 @@
 package com.dalmuri.dalmuri.data.remote.model
 
+import com.dalmuri.dalmuri.domain.model.MonthlyReview
 import com.dalmuri.dalmuri.domain.model.Til
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -44,3 +45,21 @@ data class AiAnalysisDto(
 data class ChartSummaryDto(
     val summary: String,
 )
+
+@Serializable
+data class MonthlyReviewDto(
+    val learningKeywords: List<String>,
+    val overallMood: String,
+    val challengeDate: String,
+    val growthPoints: List<String>,
+    val nextMonthAdvice: String,
+) {
+    fun toDomain(): MonthlyReview =
+        MonthlyReview(
+            keywords = learningKeywords,
+            overallMood = overallMood,
+            challengeDate = challengeDate,
+            growthPoints = growthPoints,
+            nextMonthAdvice = nextMonthAdvice,
+        )
+}

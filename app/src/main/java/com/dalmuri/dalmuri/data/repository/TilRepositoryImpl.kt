@@ -1,5 +1,6 @@
 package com.dalmuri.dalmuri.data.repository
 
+import android.util.Log.e
 import com.dalmuri.dalmuri.data.local.datasource.TilLocalDataSource
 import com.dalmuri.dalmuri.data.mapper.toDomain
 import com.dalmuri.dalmuri.data.mapper.toEntity
@@ -7,6 +8,7 @@ import com.dalmuri.dalmuri.data.remote.datasource.TilRemoteDataSource
 import com.dalmuri.dalmuri.domain.model.Til
 import com.dalmuri.dalmuri.domain.repository.TilRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -49,15 +51,22 @@ class TilRepositoryImpl
                 Result.failure(e)
             }
 
-        override fun getAllTils(): Flow<List<Til>> = localDataSource.getAllTils().map { entities -> entities.map { it.toDomain() } }
+        override fun getAllTils(): Flow<Result<List<Til>>> =
+            localDataSource
+                .getAllTils()
+                .map { entities ->
+                    Result.success(entities.map { it.toDomain() })
+                }.catch { emit(Result.failure(it)) }
 
         override fun getTilsByMonth(
             startTime: Long,
             endTime: Long,
-        ): Flow<List<Til>> =
-            localDataSource.getTilsByMonth(startTime, endTime).map { entities ->
-                entities.map { it.toDomain() }
-            }
+        ): Flow<Result<List<Til>>> =
+            localDataSource
+                .getTilsByMonth(startTime, endTime)
+                .map { entities ->
+                    Result.success(entities.map { it.toDomain() })
+                }.catch { emit(Result.failure(it)) }
 
         override suspend fun deleteTil(id: Long): Result<Unit> =
             try {
