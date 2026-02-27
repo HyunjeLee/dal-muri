@@ -69,7 +69,6 @@ internal fun ReviewContent(
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 월간 선택 헤더
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
@@ -98,7 +97,6 @@ internal fun ReviewContent(
 
                 val review = state.reviewData ?: MonthlyReview()
 
-                // TIL Keywords 섹션
                 KeywordsSection(review.keywords)
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -108,7 +106,6 @@ internal fun ReviewContent(
                 )
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Emotion Analysis 섹션
                 Text(
                     text = "Emotion Analysis",
                     style = MaterialTheme.typography.headlineSmall,
@@ -124,7 +121,6 @@ internal fun ReviewContent(
                 )
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Growth Point 섹션
                 Text(
                     text = "Growth Point",
                     style = MaterialTheme.typography.headlineSmall,
@@ -140,7 +136,6 @@ internal fun ReviewContent(
                 )
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Advice 섹션
                 AdviceSection(review.nextMonthAdvice)
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -273,7 +268,6 @@ private fun GrowthPointSection(points: List<String>) {
             Row(
                 verticalAlignment = Alignment.Top,
             ) {
-                // 아이콘을 텍스트 첫 줄 높이에 맞추기 위해 텍스트 스타일과 패딩 조절 가능
                 Icon(
                     Icons.Default.Done,
                     contentDescription = null,
@@ -328,7 +322,6 @@ private fun AdviceSection(advice: String) {
 
 @Composable
 private fun CustomLoadingText() {
-    // 2. 보여줄 메시지들을 리스트로 정의
     val messages =
         remember {
             listOf(
@@ -340,7 +333,6 @@ private fun CustomLoadingText() {
             )
         }
 
-    // 3. 현재 보여줄 메시지의 인덱스 관리
     var currentIndex by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
