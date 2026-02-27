@@ -1,9 +1,10 @@
 package com.dalmuri.dalmuri.presentation.chart.components
 
-import android.R.attr.padding
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dalmuri.dalmuri.presentation.theme.DalmuriTheme
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AiInsightCard(
     isLoading: Boolean = true,
@@ -32,7 +34,7 @@ fun AiInsightCard(
                     Box(
                         modifier = Modifier.fillMaxWidth().height(100.dp),
                         contentAlignment = Alignment.Center,
-                    ) { CircularProgressIndicator() }
+                    ) { LoadingIndicator() }
                 }
                 false -> {
                     Row(verticalAlignment = Alignment.CenterVertically) {

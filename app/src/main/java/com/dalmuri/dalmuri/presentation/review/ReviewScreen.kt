@@ -1,6 +1,5 @@
 package com.dalmuri.dalmuri.presentation.review
 
-import android.R.attr.maxLines
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -26,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dalmuri.dalmuri.domain.model.MonthlyReview
-import com.patrykandpatrick.vico.compose.cartesian.axis.text
 import kotlinx.coroutines.delay
 
 @Composable
@@ -41,6 +39,7 @@ fun ReviewScreen(viewModel: ReviewViewModel = hiltViewModel()) {
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun ReviewContent(
     state: ReviewContract.State,
@@ -50,13 +49,15 @@ internal fun ReviewContent(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
     ) {
         if (state.isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) { LoadingIndicator() }
         } else if (state.isAiAnalysisLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CustomLoadingText()
-            }
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) { CustomLoadingText() }
         } else {
             Column(
                 modifier =
