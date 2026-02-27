@@ -40,7 +40,7 @@ class MonthlyReportDaoTest {
                 MonthlyReportEntity(
                     yearMonth = "2025-02",
                     chartSummary = "Great month!",
-                    learningKeyword =
+                    learningKeywords =
                         listOf(
                             "Room",
                             "Hilt",
@@ -55,11 +55,27 @@ class MonthlyReportDaoTest {
                             "Reflection 대신 코드가 생성되는 방식인 Kotlinx Serialization을 도입하여 데이터 파싱 성능 최적화 달성",
                             "데이터베이스 인덱싱 설정을 통해 대량의 데이터 정렬 및 조회 성능을 고려한 설계 패턴 습득",
                         ),
-                    nextMonthAdvice = "다음 달에는 이번에 구축한 DB 구조를 바탕으로 실시간 데이터 흐름(Flow) 처리를 심화 학습해보는 것을 추천합니다.",
+                    nextMonthAdvice =
+                        "다음 달에는 이번에 구축한 DB 구조를 바탕으로 실시간 데이터 흐름(Flow) 처리를 심화 학습해보는 것을 추천합니다.",
+                    overallMood = "Excellent",
+                    challengeDate = "2025-02-14",
                     createdAt = System.currentTimeMillis(),
                 )
 
-            monthlyReportDao.insertMonthlyReview(report)
+            monthlyReportDao.upsertChartSummary(
+                report.yearMonth,
+                report.chartSummary ?: "",
+                report.createdAt,
+            )
+            monthlyReportDao.upsertReviewFields(
+                report.yearMonth,
+                report.learningKeywords ?: emptyList(),
+                report.overallMood ?: "",
+                report.challengeDate ?: "",
+                report.growthPoints ?: emptyList(),
+                report.nextMonthAdvice ?: "",
+                report.createdAt,
+            )
 
             val loaded = monthlyReportDao.getReviewByMonth("2025-02")
             assertNotNull(loaded)
@@ -67,7 +83,7 @@ class MonthlyReportDaoTest {
 
             assertEquals(report.yearMonth, loaded?.yearMonth)
             assertEquals(report.chartSummary, loaded?.chartSummary)
-            assertEquals(report.learningKeyword, loaded?.learningKeyword)
+            assertEquals(report.learningKeywords, loaded?.learningKeywords)
             assertEquals(report.growthPoints, loaded?.growthPoints)
             assertEquals(report.nextMonthAdvice, loaded?.nextMonthAdvice)
             assertEquals(report.createdAt, loaded?.createdAt)

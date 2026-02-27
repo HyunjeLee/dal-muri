@@ -81,7 +81,7 @@ class TilDaoTest {
             tilDao.insertTil(febTil)
             tilDao.insertTil(janTil)
 
-            val results = tilDao.getTilsByMonth(startOfFeb, endOfFeb)
+            val results = tilDao.getTilsByMonth(startOfFeb, endOfFeb).first()
 
             assertEquals(1, results.size)
             assertEquals("Feb", results[0].title)
